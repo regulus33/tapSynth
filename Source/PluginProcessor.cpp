@@ -1,8 +1,6 @@
 /*
   ==============================================================================
-
     This file contains the basic framework code for a JUCE plugin processor.
-
   ==============================================================================
 */
 
@@ -22,12 +20,13 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
                        )
 #endif
 {
-    synth.addSound(new SynthSound());
-    synth.addVoice(new SynthVoice());
+    synth.addSound (new SynthSound());
+    synth.addVoice (new SynthVoice());
 }
 
 TapSynthAudioProcessor::~TapSynthAudioProcessor()
 {
+    
 }
 
 //==============================================================================
@@ -95,9 +94,15 @@ void TapSynthAudioProcessor::changeProgramName (int index, const juce::String& n
 //==============================================================================
 void TapSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    synth.setCurrentPlaybackSampleRate(sampleRate);
+    synth.setCurrentPlaybackSampleRate (sampleRate);
+    
+    for (int i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
+        {
+            voice->prepareToPlay (sampleRate, samplesPerBlock, getTotalNumOutputChannels());
+        }
+    }
 }
 
 void TapSynthAudioProcessor::releaseResources()
@@ -115,8 +120,6 @@ bool TapSynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
   #else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
@@ -138,16 +141,10 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
     
-    // Update the oscillator if something changed from user input
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
         if (auto voice = dynamic_cast<juce::SynthesiserVoice*>(synth.getVoice(i)))
@@ -157,17 +154,8 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             // LFO
         }
     }
-
-    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
     
-    
-    
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+    synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -201,3 +189,5 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new TapSynthAudioProcessor();
 }
+
+// Value Tree

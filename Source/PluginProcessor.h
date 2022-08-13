@@ -1,24 +1,19 @@
 /*
   ==============================================================================
-
     This file contains the basic framework code for a JUCE plugin processor.
-
   ==============================================================================
 */
 
 #pragma once
 
 #include <JuceHeader.h>
-#include "SynthSound.h"
 #include "SynthVoice.h"
+#include "SynthSound.h"
 
 //==============================================================================
 /**
 */
 class TapSynthAudioProcessor  : public juce::AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif
 {
 public:
     //==============================================================================
@@ -60,7 +55,7 @@ public:
 
 private:
     juce::Synthesiser synth;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TapSynthAudioProcessor)
-
 };
