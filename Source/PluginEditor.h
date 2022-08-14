@@ -23,9 +23,26 @@ public:
     void resized() override;
 
 private:
+    // NOTE: unique_ptrs could be used here
+    juce::Slider attackSlider;
+    juce::Slider decaySlider;
+    juce::Slider sustainSlider;
+    juce::Slider releasSlider;
+    juce::ComboBox oscSelector;
+    
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    
+    // Why unique pointer? When you close your vst window the ui process is destroyed. These pointers allow us to free up memory when the process is killed
+    std::unique_ptr<SliderAttachment> attackAttachment;
+    std::unique_ptr<SliderAttachment> decayAttachment;
+    std::unique_ptr<SliderAttachment> sustainAttachment;
+    std::unique_ptr<SliderAttachment> releaseAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscSelAttachment;
+    
+    
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TapSynthAudioProcessor& audioProcessor;
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TapSynthAudioProcessorEditor)
 };
