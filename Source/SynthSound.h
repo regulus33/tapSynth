@@ -6,6 +6,10 @@
   ==============================================================================
 */
 
+// resources
+// hot reload with visual studio
+// https://youtu.be/L7hL-vkJQUU
+
 #pragma once
 
 #include <JuceHeader.h>

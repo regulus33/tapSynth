@@ -73,10 +73,14 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
     synthBuffer.clear();
     
     juce::dsp::AudioBlock<float> audioBlock { synthBuffer };
+    
     osc.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
     gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
     
     adsr.applyEnvelopeToBuffer (synthBuffer, 0, synthBuffer.getNumSamples());
+    
+    if (startSample != 0)
+        jassertfalse;
     
     for(int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
     {
