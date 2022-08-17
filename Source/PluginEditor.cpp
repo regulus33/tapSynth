@@ -22,6 +22,11 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcess
     releaseAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, "RELEASE", attackSlider);
     
     oscSelAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "OSC", oscSelector);
+    
+    setSliderParams(attackSlider);
+    setSliderParams(decaySlider);
+    setSliderParams(sustainSlider);
+    setSliderParams(releasSlider);
 }
 
 TapSynthAudioProcessorEditor::~TapSynthAudioProcessorEditor()
@@ -44,3 +49,11 @@ void TapSynthAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 }
+
+void TapSynthAudioProcessorEditor::setSliderParams (juce::Slider& slider)
+{
+    attackSlider.setSliderStyle (juce::Slider::SliderStyle::LinearVertical);
+    attackSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, true, 50, 25);
+    addAndMakeVisible (slider);
+}
+  

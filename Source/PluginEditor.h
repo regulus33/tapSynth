@@ -23,6 +23,7 @@ public:
     void resized() override;
 
 private:
+    void setSliderParams(juce::Slider& slider);
     // NOTE: unique_ptrs could be used here
     juce::Slider attackSlider;
     juce::Slider decaySlider;
