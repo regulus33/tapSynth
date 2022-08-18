@@ -36,18 +36,26 @@ TapSynthAudioProcessorEditor::~TapSynthAudioProcessorEditor()
 //==============================================================================
 void TapSynthAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.fillAll(juce::Colours::black);
 }
 
 void TapSynthAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    const auto bounds = getLocalBounds().reduced(10);
+    const auto padding = 10;
+    const auto sliderWidth = bounds.getWidth() / 4 - padding;
+    const auto sliderHeight = bounds.getWidth() / 4 - padding;
+    const auto sliderStartX = 0;
+    const auto sliderStartY = bounds.getHeight() / 2 - (sliderHeight / 2);
+    
+    // getRight() gets the bounds
+    attackSlider.setBounds(sliderStartX, sliderStartY, sliderWidth, sliderHeight);
+    decaySlider.setBounds(attackSlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
+    sustainSlider.setBounds(decaySlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
+    releasSlider.setBounds(sustainSlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
+    
 }
 
 void TapSynthAudioProcessorEditor::setSliderParams (juce::Slider& slider)
