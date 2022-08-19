@@ -55,7 +55,6 @@ void TapSynthAudioProcessorEditor::resized()
     decaySlider.setBounds(attackSlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
     sustainSlider.setBounds(decaySlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
     releasSlider.setBounds(sustainSlider.getRight() + padding, sliderStartY, sliderWidth, sliderHeight);
-    
 }
 
 void TapSynthAudioProcessorEditor::setSliderParams (juce::Slider& slider)

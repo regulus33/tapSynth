@@ -21,7 +21,9 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
                        ), apvts(*this, nullptr, "Parameters", createParams())
 #endif
 {
+    // the actual sound of the synth
     synth.addSound (new SynthSound());
+    // the parent container of the sound
     synth.addVoice (new SynthVoice());
 }
 
@@ -136,18 +138,29 @@ bool TapSynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 }
 #endif
 
+// Capturing audio samples from your daw
+// processBlock runs through the audio samples at rate of (sample rate) / (block|buffer size)
+// 44100 (sample rate) / 128 (block size) = 344.53125 times per second
+
+// 344 runs per second
+// all about processBlock https://www.youtube.com/watch?v=HpGJH_gKRCU
 void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    // something about floating points
     juce::ScopedNoDenormals noDenormals;
+    // obvious
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
+    
+    // this is in here by default
+    // clears everyting in the buffer up until current sample ( i think )
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    
+    // polyphony?
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
+        // check that we have the correct class
         if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
             // Osc controls
@@ -155,11 +168,14 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             // LFO
             
             // TODO watch TAP talk his son the basics of C++
+            
+            // get the current value from the gui state
             auto& attack = *apvts.getRawParameterValue("ATTACK");
             auto& decay = *apvts.getRawParameterValue("DECAY");
             auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
             auto& release = *apvts.getRawParameterValue("RELEASE");
             
+            // update values
             voice->updateADSR (attack.load(), decay.load(), sustain.load(), release.load());
         }
     }
@@ -206,7 +222,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
 
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-    // OSC select
+    // OSC select instantiate with default values
     params.push_back(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"OSC", 1}, "Oscillator", juce::StringArray {"Sine", "Saw" , "Square"}, 0));
     
     // ADSR
@@ -217,6 +233,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
 
  
     // https://youtu.be/hrfSJXfTCYE?t=832
+    // return whole array of params?
     return { params.begin(), params.end() };
     
 }
