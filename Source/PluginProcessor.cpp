@@ -23,12 +23,7 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
 #endif
 {
     synth.addSound (new SynthSound());
-    //synth.addVoice (new SynthVoice());
-    
-    for (int i = 0; i < 5; i++)
-    {
-        synth.addVoice (new SynthVoice());
-    }
+    synth.addVoice (new SynthVoice());
 }
 
 TapSynthAudioProcessor::~TapSynthAudioProcessor()
@@ -142,12 +137,6 @@ bool TapSynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 }
 #endif
 
-// Capturing audio samples from your daw
-// processBlock runs through the audio samples at rate of (sample rate) / (block|buffer size)
-// 44100 (sample rate) / 128 (block size) = 344.53125 times per second
-
-// 344 runs per second
-// all about processBlock https://www.youtube.com/watch?v=HpGJH_gKRCU
 void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -161,31 +150,16 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     {
         if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
+            // Osc controls
+            // ADSR
+            // LFO
+            
             auto& attack = *apvts.getRawParameterValue ("ATTACK");
             auto& decay = *apvts.getRawParameterValue ("DECAY");
             auto& sustain = *apvts.getRawParameterValue ("SUSTAIN");
             auto& release = *apvts.getRawParameterValue ("RELEASE");
             
-            auto& osc1Choice = *apvts.getRawParameterValue ("OSC1");
-            auto& osc2Choice = *apvts.getRawParameterValue ("OSC2");
-            auto& osc1Gain = *apvts.getRawParameterValue ("OSC1GAIN");
-            auto& osc2Gain = *apvts.getRawParameterValue ("OSC2GAIN");
-            auto& osc1Pitch = *apvts.getRawParameterValue ("OSC1PITCH");
-            auto& osc2Pitch = *apvts.getRawParameterValue ("OSC2PITCH");
-            
-            auto& osc1 = voice->getOscillator1();
-            auto& osc2 = voice->getOscillator2();
-            auto& adsr = voice->getAdsr();
-            
-            osc1.setType (osc1Choice);
-            osc1.setGain (osc1Gain);
-            osc1.setPitchVal (osc1Pitch);
-            
-            osc2.setType (osc2Choice);
-            osc2.setGain (osc2Gain);
-            osc2.setPitchVal (osc2Pitch);
-
-            adsr.update (attack.load(), decay.load(), sustain.load(), release.load());
+            voice->update (attack.load(), decay.load(), sustain.load(), release.load());
         }
     }
     
@@ -229,16 +203,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
     // OSC select
-    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC1", 1}, "Oscillator 1", juce::StringArray { "Sine", "Saw", "Square" }, 0));
-    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC2", 1}, "Oscillator 2", juce::StringArray { "Sine", "Saw", "Square" }, 0));
-    
-    // OSC Gain
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC1GAIN", 1}, "Oscillator 1 Gain", juce::NormalisableRange<float> { -40.0f, 0.2f, }, 0.1f, "dB"));
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC2GAIN", 1}, "Oscillator 2 Gain", juce::NormalisableRange<float> { -40.0f, 0.2f, }, 0.1f, "dB"));
-    
-    // OSC Pitch val
-    params.push_back (std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"OSC1PITCH", 1}, "Oscillator 1 Pitch", -48, 48, 0));
-    params.push_back (std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"OSC2PITCH", 1}, "Oscillator 2 Pitch", -48, 48, 0));
+    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC", 1}, "Oscillator", juce::StringArray { "Sine", "Saw", "Square" }, 0));
     
     // ADSR
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"ATTACK", 1}, "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 0.1f));
