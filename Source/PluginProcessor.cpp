@@ -1,6 +1,8 @@
 /*
   ==============================================================================
+
     This file contains the basic framework code for a JUCE plugin processor.
+
   ==============================================================================
 */
 
@@ -8,7 +10,6 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-// NOTE: sometimes you need to initialize something in the actual constructor definition not the body of the constructor
 TapSynthAudioProcessor::TapSynthAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
@@ -18,13 +19,16 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), apvts(*this, nullptr, "Parameters", createParams())
+                       ), apvts (*this, nullptr, "Parameters", createParams())
 #endif
 {
-    // the actual sound of the synth
     synth.addSound (new SynthSound());
-    // the parent container of the sound
-    synth.addVoice (new SynthVoice());
+    //synth.addVoice (new SynthVoice());
+    
+    for (int i = 0; i < 5; i++)
+    {
+        synth.addVoice (new SynthVoice());
+    }
 }
 
 TapSynthAudioProcessor::~TapSynthAudioProcessor()
@@ -146,37 +150,42 @@ bool TapSynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 // all about processBlock https://www.youtube.com/watch?v=HpGJH_gKRCU
 void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    // something about floating points
     juce::ScopedNoDenormals noDenormals;
-    // obvious
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    
-    // this is in here by default
-    // clears everyting in the buffer up until current sample ( i think )
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // polyphony?
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-        // check that we have the correct class
         if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
-            // Osc controls
-            // ADSR
-            // LFO
+            auto& attack = *apvts.getRawParameterValue ("ATTACK");
+            auto& decay = *apvts.getRawParameterValue ("DECAY");
+            auto& sustain = *apvts.getRawParameterValue ("SUSTAIN");
+            auto& release = *apvts.getRawParameterValue ("RELEASE");
             
-            // TODO watch TAP talk his son the basics of C++
+            auto& osc1Choice = *apvts.getRawParameterValue ("OSC1");
+            auto& osc2Choice = *apvts.getRawParameterValue ("OSC2");
+            auto& osc1Gain = *apvts.getRawParameterValue ("OSC1GAIN");
+            auto& osc2Gain = *apvts.getRawParameterValue ("OSC2GAIN");
+            auto& osc1Pitch = *apvts.getRawParameterValue ("OSC1PITCH");
+            auto& osc2Pitch = *apvts.getRawParameterValue ("OSC2PITCH");
             
-            // get the current value from the gui state
-            auto& attack = *apvts.getRawParameterValue("ATTACK");
-            auto& decay = *apvts.getRawParameterValue("DECAY");
-            auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
-            auto& release = *apvts.getRawParameterValue("RELEASE");
+            auto& osc1 = voice->getOscillator1();
+            auto& osc2 = voice->getOscillator2();
+            auto& adsr = voice->getAdsr();
             
-            // update values
-            voice->updateADSR (attack.load(), decay.load(), sustain.load(), release.load());
+            osc1.setType (osc1Choice);
+            osc1.setGain (osc1Gain);
+            osc1.setPitchVal (osc1Pitch);
+            
+            osc2.setType (osc2Choice);
+            osc2.setGain (osc2Gain);
+            osc2.setPitchVal (osc2Pitch);
+
+            adsr.update (attack.load(), decay.load(), sustain.load(), release.load());
         }
     }
     
@@ -215,25 +224,27 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new TapSynthAudioProcessor();
 }
 
-// Value Tree
 juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::createParams()
 {
-    
-
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-    // OSC select instantiate with default values
-    params.push_back(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"OSC", 1}, "Oscillator", juce::StringArray {"Sine", "Saw" , "Square"}, 0));
+    // OSC select
+    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC1", 1}, "Oscillator 1", juce::StringArray { "Sine", "Saw", "Square" }, 0));
+    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC2", 1}, "Oscillator 2", juce::StringArray { "Sine", "Saw", "Square" }, 0));
+    
+    // OSC Gain
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC1GAIN", 1}, "Oscillator 1 Gain", juce::NormalisableRange<float> { -40.0f, 0.2f, }, 0.1f, "dB"));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC2GAIN", 1}, "Oscillator 2 Gain", juce::NormalisableRange<float> { -40.0f, 0.2f, }, 0.1f, "dB"));
+    
+    // OSC Pitch val
+    params.push_back (std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"OSC1PITCH", 1}, "Oscillator 1 Pitch", -48, 48, 0));
+    params.push_back (std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"OSC2PITCH", 1}, "Oscillator 2 Pitch", -48, 48, 0));
     
     // ADSR
-    params.push_back(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"ATTACK", 1}, "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f}, 0.1f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"DECAY", 1}, "Decay", juce::NormalisableRange<float> { 0.1f, 1.0f}, 0.1f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.1f, 1.0f}, 1.0f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.1f, 3.0f}, 0.4f));
-
- 
-    // https://youtu.be/hrfSJXfTCYE?t=832
-    // return whole array of params?
-    return { params.begin(), params.end() };
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"ATTACK", 1}, "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"DECAY", 1}, "Decay", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 1.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.1f, 3.0f, }, 0.4f));
     
+    return { params.begin(), params.end() };
 }

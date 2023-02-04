@@ -5,9 +5,6 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="oazQoP" name="tapSynth">
     <GROUP id="{B7ED45FD-C0E0-3429-7418-C229747A884F}" name="Source">
-      <FILE id="QfUaVk" name="SynthSound.h" compile="0" resource="0" file="Source/SynthSound.h"/>
-      <FILE id="HESoH1" name="SynthVoice.cpp" compile="1" resource="0" file="Source/SynthVoice.cpp"/>
-      <FILE id="UNvJjH" name="SynthVoice.h" compile="0" resource="0" file="Source/SynthVoice.h"/>
       <FILE id="Ite7ym" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="Rl11e1" name="PluginProcessor.h" compile="0" resource="0"
@@ -15,6 +12,23 @@
       <FILE id="gAXzCK" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="cuYIef" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="HESoH1" name="SynthVoice.cpp" compile="1" resource="0" file="Source/SynthVoice.cpp"/>
+      <FILE id="UNvJjH" name="SynthVoice.h" compile="0" resource="0" file="Source/SynthVoice.h"/>
+      <FILE id="QfUaVk" name="SynthSound.h" compile="0" resource="0" file="Source/SynthSound.h"/>
+    </GROUP>
+    <GROUP id="{486A0D03-D38F-55E4-6DCC-D14AB490343B}" name="Data">
+      <FILE id="TYXHt5" name="AdsrData.cpp" compile="1" resource="0" file="Source/Data/AdsrData.cpp"/>
+      <FILE id="NigvcR" name="AdsrData.h" compile="0" resource="0" file="Source/Data/AdsrData.h"/>
+      <FILE id="CLHCzA" name="OscData.cpp" compile="1" resource="0" file="Source/Data/OscData.cpp"/>
+      <FILE id="wxFiSd" name="OscData.h" compile="0" resource="0" file="Source/Data/OscData.h"/>
+    </GROUP>
+    <GROUP id="{ACAE0579-F076-4475-0FB1-42E54E9F6F19}" name="UI">
+      <FILE id="TYw3Xe" name="AdsrComponent.cpp" compile="1" resource="0"
+            file="Source/UI/AdsrComponent.cpp"/>
+      <FILE id="LYcToF" name="AdsrComponent.h" compile="0" resource="0" file="Source/UI/AdsrComponent.h"/>
+      <FILE id="Onz8H6" name="OscComponent.cpp" compile="1" resource="0"
+            file="Source/UI/OscComponent.cpp"/>
+      <FILE id="ntnMs0" name="OscComponent.h" compile="0" resource="0" file="Source/UI/OscComponent.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
