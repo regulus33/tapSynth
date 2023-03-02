@@ -15,17 +15,9 @@
 class OscData : public juce::dsp::Oscillator<float>
 {
 public:
-    void prepareToPlay (double sampleRate, int samplesPerBlock, int outputChannels);
-    void setType (const int oscSelection);
-    void setGain (const float levelInDecibels);
-    void setPitchVal (const int pitch);
-    void setFreq (const int midiNoteNumber);
-    void renderNextBlock (juce::dsp::AudioBlock<float>& audioBlock);
-    
+    void setWaveType(const int choice);
 private:
-    juce::dsp::Gain<float> gain;
-    int pitchVal { 0 };
-    int lastMidiNote { 0 };
+   
 };
 
 // return std::sin (x); //Sine Wave
