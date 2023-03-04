@@ -37,3 +37,4 @@ void OscComponent::resized()
 //    auto bounds = getLocalBounds();
     oscWaveSelector.setBounds (0, 0, 90, 20);
 }
+
