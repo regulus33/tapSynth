@@ -12,26 +12,15 @@
 #include "OscComponent.h"
 
 //==============================================================================
-OscComponent::OscComponent (juce::AudioProcessorValueTreeState& apvts, juce::String oscId, juce::String gainId, juce::String pitchId)
+OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts,  juce::String waveSelectorId)
 {
-    juce::StringArray oscChoices { "Sine", "Saw", "Square" };
-    oscSelector.addItemList (oscChoices, 1);
-    oscSelector.setSelectedItemIndex (0);
-    addAndMakeVisible (oscSelector);
+    juce::StringArray choices { "Sine", "Saw", "Square" };
+    // populate the selector with choice values
+    oscWaveSelector.addItemList(choices, 1);
+    addAndMakeVisible(oscWaveSelector);
     
-    gainSlider.setSliderStyle (juce::Slider::SliderStyle::LinearVertical);
-    gainSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, true, 50, 25);
-    addAndMakeVisible (gainSlider);
-    
-    pitchSlider.setSliderStyle (juce::Slider::SliderStyle::LinearVertical);
-    pitchSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, true, 50, 25);
-    addAndMakeVisible (pitchSlider);
-    
-    oscSelAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, oscId, oscSelector);
-    
-    gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, gainId, gainSlider);
-    
-    pitchAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, pitchId, pitchSlider);
+    // pass the audio processor value tree state reference and the parameter id
+    oscWaveSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, waveSelectorId, oscWaveSelector);
 }
 
 OscComponent::~OscComponent()
@@ -45,8 +34,6 @@ void OscComponent::paint (juce::Graphics& g)
 
 void OscComponent::resized()
 {
-    auto bounds = getLocalBounds();
-    oscSelector.setBounds (bounds.removeFromLeft (getWidth() / 2));
-    gainSlider.setBounds (bounds.removeFromLeft(getWidth() / 4));
-    pitchSlider.setBounds (bounds);
+//    auto bounds = getLocalBounds();
+    oscWaveSelector.setBounds (0, 0, 90, 20);
 }

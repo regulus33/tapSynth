@@ -18,19 +18,17 @@
 class OscComponent : public juce::Component
 {
 public:
-    OscComponent (juce::AudioProcessorValueTreeState& apvts, juce::String oscId, juce::String gainId, juce::String pitchId);
+    OscComponent(juce::AudioProcessorValueTreeState& apvts, juce::String waveSelectorId);
+    // see readme
     ~OscComponent() override;
-
+    
     void paint (juce::Graphics&) override;
     void resized() override;
-
 private:
-    juce::ComboBox oscSelector;
-    juce::Slider gainSlider;
-    juce::Slider pitchSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscSelAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pitchAttachment;
+    // this is like the actual reference to the GUI compoent
+    juce::ComboBox oscWaveSelector;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscWaveSelectorAttachment;
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OscComponent)
 };
