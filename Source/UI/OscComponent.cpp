@@ -12,7 +12,9 @@
 #include "OscComponent.h"
 
 //==============================================================================
-OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts,  juce::String waveSelectorId)
+
+// We pass down these different IDS to we can control various data oscillators with various osc view components
+OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts,  juce::String waveSelectorId, juce::String fmFreqId, juce::String fmDepthId)
 {
     juce::StringArray choices { "Sine", "Saw", "Square" };
     // populate the selector with choice values
@@ -21,6 +23,12 @@ OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts,  juce::Str
     
     // pass the audio processor value tree state reference and the parameter id
     oscWaveSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, waveSelectorId, oscWaveSelector);
+    
+    fmFreqSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    fmFreqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 25);
+    addAndMakeVisible(fmFreqSlider);
+    
+    fmFreqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, fmFreqId, fmFreqSlider);
 }
 
 OscComponent::~OscComponent()

@@ -25,6 +25,13 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    
+    // TODO: programatically select first device
+//    static void myMidiInputCallback(const juce::MidiMessage& message, juce::MidiInput* source)
+//    {
+//        std::cout << "Received MIDI message: " << message.getDescription() << std::endl;
+//    }
+
 
 private:
     
