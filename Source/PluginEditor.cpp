@@ -36,12 +36,14 @@ TapSynthAudioProcessorEditor::~TapSynthAudioProcessorEditor()
 void TapSynthAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
+//    g.setColour(juce::Colours::white);
+//    g.drawRect(getLocalBounds());
+  
 }
 
 void TapSynthAudioProcessorEditor::resized()
 {
-    osc.setBounds(10,10,100,30);
+    osc.setBounds(10, 10, 180, 200);
     adsr.setBounds (getWidth() / 2, 0, getWidth() / 2, getHeight());
-
 }
 
