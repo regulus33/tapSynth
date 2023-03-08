@@ -24,17 +24,7 @@ OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts,  juce::Str
     // pass the audio processor value tree state reference and the parameter id
     oscWaveSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, waveSelectorId, oscWaveSelector);
     
-    fmFreqSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    fmFreqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 25);
-    addAndMakeVisible(fmFreqSlider);
-    
-    fmFreqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, fmFreqId, fmFreqSlider);
-    
-    fmFreqLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
-    fmFreqLabel.setFont(15.0f);
-    fmFreqLabel.setJustificationType(juce::Justification::centred);
-    
-    addAndMakeVisible(fmFreqLabel);
+    setSliderWithLabel(fmFreqSlider, fmFreqLabel, apvts, fmFreqId, fmFreqAttachment);
 }
 
 OscComponent::~OscComponent()
@@ -54,5 +44,22 @@ void OscComponent::resized()
     oscWaveSelector.setBounds (0, 0, 90, 20);
     fmFreqSlider.setBounds(0, 80, 100, 90);
     fmFreqLabel.setBounds(fmFreqSlider.getX(), fmFreqSlider.getY() - 20, fmFreqSlider.getWidth(), 20);
+}
+
+using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+
+void OscComponent::setSliderWithLabel(juce::Slider& slider, juce::Label& label, juce::AudioProcessorValueTreeState& apvts, juce::String paramId, std::unique_ptr<Attachment>& attachment)
+{
+    slider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 25);
+    addAndMakeVisible(slider);
+    
+    fmFreqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, paramId, slider);
+    
+    fmFreqLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
+    fmFreqLabel.setFont(15.0f);
+    fmFreqLabel.setJustificationType(juce::Justification::centred);
+    
+    addAndMakeVisible(fmFreqLabel);
 }
 

@@ -193,4 +193,12 @@ where:
 For example, the following lambda expression defines a simple function that takes two integers and returns their sum:
 ```cpp
 auto sum = [](int a, int b) { return a + b; };
+
+## XCODE shortcuts
+https://medium.com/bpxl-craft/our-favorite-xcode-shortcuts-d3271c481d56#:~:text=1.,in%20scope%3A%20CTRL%2B%E2%8C%98%2BE
 ```
+
+#### Select next instance
+
+`Command + option + e` 
+
