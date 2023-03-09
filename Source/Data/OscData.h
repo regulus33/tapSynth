@@ -3,7 +3,7 @@
 
     OscData.h
     Created: 14 Feb 2021 6:51:17pm
-    Author:  Joshua Hodge
+    Author:  Zachary Rowden
 
   ==============================================================================
 */

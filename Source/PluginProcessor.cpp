@@ -218,10 +218,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC1FMDEPTH", 1}, "Osc 1 FM Depth", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f}, 500.0f));
     
     // ADSR
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"ATTACK", 1}, "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 0.1f));
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"DECAY", 1}, "Decay", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 0.1f));
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.1f, 1.0f, }, 1.0f));
-    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.1f, 3.0f, }, 0.4f));
+    // {lower bound, upper bound, increment value}
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"ATTACK", 1}, "Attack", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"DECAY", 1}, "Decay", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 1.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.0f, 3.0f, 0.01f}, 0.4f));
     
     params.push_back(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID({"OSC1WAVETYPE", 1}), "Osc 1 Wave Type", juce::StringArray {"Sin", "Saw", "Square"}, 0));
     

@@ -3,7 +3,7 @@
 
     AdsrData.cpp
     Created: 7 Feb 2021 2:29:21pm
-    Author:  Joshua Hodge
+    Author:  Zachary Rowden
 
   ==============================================================================
 */

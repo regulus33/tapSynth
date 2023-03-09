@@ -3,7 +3,7 @@
 
     SynthVoice.h
     Created: 10 Dec 2020 1:55:41pm
-    Author:  Joshua Hodge
+    Author:  Zachary Rowden
 
   ==============================================================================
 */

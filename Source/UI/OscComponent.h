@@ -3,7 +3,7 @@
 
     OscComponent.h
     Created: 14 Feb 2021 6:51:39pm
-    Author:  Joshua Hodge
+    Author:  Zachary Rowden
 
   ==============================================================================
 */
@@ -37,6 +37,7 @@ private:
     std::unique_ptr<Attachment> fmFreqAttachment;
     std::unique_ptr<Attachment> fmDepthAttachment;
 
+    juce::Label waveSelectorLabel { "Wave Type", "Wave Type" };
     juce::Label fmFreqLabel {"FM Freq", "FM freq"};
     juce::Label fmDepthLabel {"FM Depth", "FM Depth"};
     
