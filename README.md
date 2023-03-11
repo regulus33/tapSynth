@@ -1,4 +1,36 @@
-# Plugin Processor
+# juce::SynthesizerVoice
+The `juce::SynthesiserVoice` class is a base class for creating voices for a synthesizer in JUCE. It contains methods that are common to all types of synthesizer voices, such as triggering and stopping the voice, handling pitch bend and aftertouch, and rendering the audio for a particular note. When creating a new synthesizer in JUCE, you would typically subclass `juce::SynthesiserVoice` to create your own custom voice class that implements the specifics of your synthesizer.
+
+would it make sense to have a rompler or sampler voice subclass this class? For midi etc?
+
+Yes, it would make sense to have a rompler or sampler voice subclass the `juce::SynthesiserVoice` class for MIDI. The `SynthesiserVoice` class is designed to provide the base functionality for a voice in a synthesizer, handling the allocation, deallocation, and MIDI event processing for each voice. Since a sampler or rompler is also a type of synthesizer, it would make sense to subclass `SynthesiserVoice` to handle the MIDI event processing and voice allocation.
+
+# juce renderNextBlock method (and kind of a rabbithole of audio callbacks)
+`renderNextBlock` is a method in the `SynthesiserVoice` class of JUCE that generates the audio output for the given `AudioBuffer`. It takes two parameters - the `outputBuffer` and the `startSample` - and fills the buffer with audio samples for the requested block.
+
+When `renderNextBlock` is called, it calculates the audio samples for the block by calling the `renderNextBlock` method of the underlying audio source, such as an oscillator, sampler, or wavetable.
+
+The purpose of `renderNextBlock` is to generate audio output for a voice, which is then combined with the audio output of other voices by the `Synthesiser` class to produce the final audio output for the synthesizer.
+
+Question: So where and when is `renderNextBlock` called in relation to `PluginProcessor::processBlock`?
+
+`renderNextBlock` is typically called by `PluginProcessor::processBlock` for each audio callback. 
+
+Question: It sounds like what we're doing in these `*Block` methods is simply moving from sample to sample (probably in groups based on the host's block size) with the goal of completing a loop through the audio buffer. Is the reason we see references to "nextBlock" in some of the juce code because our current block sort of determines the next block and the current block is sort of determined by the last? Do we need to do this in order to preserve some form of continuity? Or is it more for speed / real time concerns?
+
+Yes! The `*Block` methods are called repeatedly to process blocks of audio samples. The block size is typically determined by the host, and is usually a power of two (e.g. 64, 128, 256, 512, 1024, etc.).
+
+The reason why we see references to "nextBlock" in some of the JUCE code is that the output of the current block can depend on the input of the next block. This is known as "lookahead". For example, some effects might need to analyze the audio signal ahead of time in order to determine how to process the current block. In order to do this, they might need to process the next block as well, which is why you might see references to "nextBlock" in their code.
+
+The reason why we process audio in blocks like this is mainly for performance reasons. Processing audio in real-time requires a lot of computational power, and breaking it up into blocks allows us to perform the processing in smaller, more manageable chunks. Additionally, many audio processing algorithms are optimized for processing data in blocks, rather than on a per-sample basis.
+
+The `processBlock` method is responsible for calling the `renderNextBlock` method *for each voice* to generate audio samples, and then combining these samples to produce the final output audio buffer. The `renderNextBlock` method is therefore a key component of the voice's audio generation process and is called repeatedly during audio processing.
+
+
+
+
+
+# juce::PluginProcessor
 In JUCE, the PluginProcessor class is the central component of an audio plugin. It is responsible for processing audio and managing the plugin's parameters.
 
 When an audio plugin is loaded, the host application creates an instance of the PluginProcessor class. The PluginProcessor is responsible for processing audio data in real-time, using the plugin's internal state and parameters. It receives audio input from the host application, processes it, and sends the output back to the host.
@@ -8,7 +40,7 @@ The PluginProcessor class also manages the plugin's parameters. It defines the p
 The PluginProcessor class is an abstract class, and it must be subclassed to create a plugin. The subclass must implement the processBlock method, which is called by the host application to process audio data. The subclass can also define additional methods and member variables as needed to implement the plugin's functionality.
 
 
-# Plugin Editor
+# juce::PluginEditor
 
 In JUCE, the AudioProcessorEditor class is used to create the graphical user interface (GUI) for an audio plugin, while the AudioProcessor class handles the audio processing functionality.
 
@@ -18,7 +50,7 @@ The AudioProcessorEditor class typically includes a number of GUI components, su
 
 Once the AudioProcessorEditor is created, it is added to the audio plugin's window by the AudioProcessor class, and the GUI is displayed to the user. The user can then interact with the GUI components to control the audio processing behavior of the plugin.
 
-#  Audio Processor Value Tree State
+# juce Audio Processor Value Tree State
 ### TLDR its a tree with change notification listeners / broadcasters so it connects the UI and Data in a very immediate nice way.
 
 In JUCE, the AudioProcessorValueTreeState class is a powerful tool for managing the state of a plugin's parameters. It provides a way to create, manage, and synchronize the state of parameters between the GUI and the audio processing code.
@@ -32,7 +64,7 @@ The AudioProcessorValueTreeState also provides a convenient way to manage the st
 Overall, the AudioProcessorValueTreeState is a powerful and flexible tool for managing the state of a plugin's parameters, and it is widely used in JUCE-based audio plugins.
 
 
-### AudioProcessorValueTreeState::ParameterLayout 
+### juce::AudioProcessorValueTreeState::ParameterLayout 
 
 In JUCE, the AudioProcessorValueTreeState::ParameterLayout class is used to define the layout of a plugin's parameters. It is used to create and manage the parameters of a plugin, and to map those parameters to a ValueTree node.
 
@@ -62,6 +94,39 @@ In this example, the Slider component is created and added to the plugin's GUI, 
 Once the attachment is created, the Slider component will automatically synchronize its value with the ValueTree property, and any changes made to the Slider will be reflected in the ValueTree property.
 
 Overall, ValueTreeState::Attachment objects provide a simple and convenient way to synchronize values between a ValueTree and a component in the plugin's GUI, and they are a powerful tool for building flexible and responsive plugins in JUCE.
+
+
+# juce::dsp::ProcessSpec
+
+The `juce::dsp::ProcessSpec` class in JUCE is used to encapsulate the specifications or parameters of an audio processing operation. It provides information about the sample rate, the number of input and output channels, and the maximum number of samples that may be processed in a single call.
+
+This class is used extensively in the JUCE DSP module to specify the processing requirements of various audio processing algorithms, such as filters, FFTs, and delay lines. The ProcessSpec object is typically passed as an argument to the `prepare()` method of a processing algorithm to initialize its internal state based on the given parameters.
+
+Here is a brief overview of the member variables of the juce::dsp::ProcessSpec class:
+
+`sampleRate:` The sample rate of the audio being processed, in Hertz.
+
+`maximumBlockSize:` The maximum number of samples that may be processed in a single call to the algorithm.
+
+`numChannels:` The number of input and output channels of the audio being processed.
+
+`options:` A bitfield of options that may affect the behavior of the algorithm, such as whether to perform in-place processing or allocate temporary buffers.
+
+By encapsulating the processing specifications in a single object, the ProcessSpec class helps to simplify the interface of audio processing algorithms and make them more modular and reusable.
+
+## prepareToPlay
+
+The prepareToPlay method in JUCE is called by the audio device manager just before the audio stream starts playing. It is typically used to perform any necessary setup operations for the audio processing, such as initializing buffers, calculating filter coefficients, or allocating memory for processing audio.
+
+In prepareToPlay, you typically initialize any resources that need to be initialized before audio playback begins, such as allocating memory or setting up data structures. You can also initialize audio buffers or audio processing objects that need to be reset before audio playback starts.
+
+You would pass process spec to prepare to play among other things and not exclusive to processSpec. Sample rate and buffer size for instance.
+
+
+<!--end of juce notes-->
+------------------------------------
+# C++ 
+
 
 # Destructors
 
@@ -108,11 +173,11 @@ In an initializer list, the member variables are listed in curly braces {} after
 
 ```cpp
 struct MyStruct {
-    int a;
-    float b;
-    double c;
+int a;
+float b;
+double c;
 
-    MyStruct(int x, float y, double z) : a(x), b(y), c(z) {}
+MyStruct(int x, float y, double z) : a(x), b(y), c(z) {}
 };
 ```
 
@@ -123,33 +188,6 @@ The initializer list syntax is used in the constructor definition, after the col
 Initializer lists can be a more concise and efficient way to initialize member variables, especially for complex or compound types such as arrays or objects. They can also be used to ensure that all member variables are properly initialized before the constructor body is executed.
 
 Overall, initializer lists are a powerful and useful feature in C++, and are commonly used to initialize the member variables of classes and structs in a concise and efficient way.
-
-
-# juce::dsp::ProcessSpec
-
-The `juce::dsp::ProcessSpec` class in JUCE is used to encapsulate the specifications or parameters of an audio processing operation. It provides information about the sample rate, the number of input and output channels, and the maximum number of samples that may be processed in a single call.
-
-This class is used extensively in the JUCE DSP module to specify the processing requirements of various audio processing algorithms, such as filters, FFTs, and delay lines. The ProcessSpec object is typically passed as an argument to the `prepare()` method of a processing algorithm to initialize its internal state based on the given parameters.
-
-Here is a brief overview of the member variables of the juce::dsp::ProcessSpec class:
-
-`sampleRate:` The sample rate of the audio being processed, in Hertz.
-
-`maximumBlockSize:` The maximum number of samples that may be processed in a single call to the algorithm.
-
-`numChannels:` The number of input and output channels of the audio being processed.
-
-`options:` A bitfield of options that may affect the behavior of the algorithm, such as whether to perform in-place processing or allocate temporary buffers.
-
-By encapsulating the processing specifications in a single object, the ProcessSpec class helps to simplify the interface of audio processing algorithms and make them more modular and reusable.
-
-## prepareToPlay
-
-The prepareToPlay method in JUCE is called by the audio device manager just before the audio stream starts playing. It is typically used to perform any necessary setup operations for the audio processing, such as initializing buffers, calculating filter coefficients, or allocating memory for processing audio.
-
-In prepareToPlay, you typically initialize any resources that need to be initialized before audio playback begins, such as allocating memory or setting up data structures. You can also initialize audio buffers or audio processing objects that need to be reset before audio playback starts.
-
-You would pass process spec to prepare to play among other things and not exclusive to processSpec. Sample rate and buffer size for instance.
 
 
 # Uniform initialization
@@ -204,16 +242,18 @@ For example, the following lambda expression defines a simple function that take
 ```cpp
 auto sum = [](int a, int b) { return a + b; };
 ```
-# XCODE shortcuts
-
-#### Auto format
-`command + a`
-`ctrl + i`
-#### Select next instance
-
-`Command + option + e` 
 
 
+
+
+
+
+
+
+
+
+# END END END
+--------------------------------------
 ### LINKS TO LEARNING
 
 Designing a straightforward limiter
@@ -226,3 +266,17 @@ Audio Processing in Faust
 part 1 https://www.youtube.com/watch?v=LHLlWNq5TKk
 part 2 https://www.youtube.com/watch?v=mF_EQ4sIE1w
 part 3 https://www.youtube.com/watch?v=9liX9Jf7RkE
+
+
+# XCODE shortcuts
+
+#### Auto format
+`command + a`
+`ctrl + i`
+#### Select next instance
+
+`Command + option + e` 
+
+
+
+

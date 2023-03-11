@@ -1,10 +1,10 @@
 /*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ This file contains the basic framework code for a JUCE plugin processor.
+ 
+ ==============================================================================
+ */
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -12,14 +12,14 @@
 //==============================================================================
 TapSynthAudioProcessor::TapSynthAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       ), apvts (*this, nullptr, "Parameters", createParams())
+: AudioProcessor (BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+                  .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+#endif
+                  .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+                  ), apvts (*this, nullptr, "Parameters", createParams())
 #endif
 {
     synth.addSound (new SynthSound());
@@ -39,29 +39,29 @@ const juce::String TapSynthAudioProcessor::getName() const
 
 bool TapSynthAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool TapSynthAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool TapSynthAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double TapSynthAudioProcessor::getTailLengthSeconds() const
@@ -72,7 +72,7 @@ double TapSynthAudioProcessor::getTailLengthSeconds() const
 int TapSynthAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int TapSynthAudioProcessor::getCurrentProgram()
@@ -105,6 +105,9 @@ void TapSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
             voice->prepareToPlay (sampleRate, samplesPerBlock, getTotalNumOutputChannels());
         }
     }
+    
+    // We only have one filter regardless of all voices so just pass the buffer on to the filter
+    filter.prepareToPlay(sampleRate, samplesPerBlock, getTotalNumOutputChannels());
 }
 
 void TapSynthAudioProcessor::releaseResources()
@@ -116,24 +119,24 @@ void TapSynthAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool TapSynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
-
+    
     // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+#if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
-
+#endif
+    
     return true;
-  #endif
+#endif
 }
 #endif
 
@@ -142,10 +145,10 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
+    
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
+    
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
         if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
@@ -171,6 +174,14 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     }
     
     synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
+    // Filter stuff
+    auto& filterType = *apvts.getRawParameterValue("FILTERTYPE");
+    auto& cutoff = *apvts.getRawParameterValue("FILTERCUTOFF");
+    auto& resonance = *apvts.getRawParameterValue("FILTERRES");
+    
+    filter.updateParameters(filterType, cutoff, resonance);
+    
+    filter.process(buffer);
 }
 
 //==============================================================================
@@ -211,9 +222,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
     // OSC select
-    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"OSC", 1}, "Oscillator", juce::StringArray { "Sine", "Saw", "Square" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID({"OSC1WAVETYPE", 1}), "Osc 1 Wave Type", juce::StringArray {"Sin", "Saw", "Square"}, 0));
     
-    // FM depth / frequency
+    // FM
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC1FMFREQ", 1}, "Osc 1 FM Frequency", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f }, 5.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"OSC1FMDEPTH", 1}, "Osc 1 FM Depth", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f}, 500.0f));
     
@@ -224,7 +235,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 1.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.0f, 3.0f, 0.01f}, 0.4f));
     
-    params.push_back(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID({"OSC1WAVETYPE", 1}), "Osc 1 Wave Type", juce::StringArray {"Sin", "Saw", "Square"}, 0));
+    // Filter
+    // TODO: dry me
+    params.push_back (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"FILTERTYPE", 1}, "Filter Type", juce::StringArray { "Low-Pass", "Band-Pass", "High-Pass" }, 0));
+    
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"FILTERCUTOFF", 1}, "Filter Cutoff", juce::NormalisableRange<float> { 20.0f, 20000.0f, 0.01f, 0.6f}, 200.0f));
+    
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"FILTERRES", 1}, "Filter Resonance", juce::NormalisableRange<float> { 1.0f, 10.0, 0.01f}, 1.0f));
     
     return { params.begin(), params.end() };
 }
