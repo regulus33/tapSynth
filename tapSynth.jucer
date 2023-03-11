@@ -19,6 +19,8 @@
     <GROUP id="{486A0D03-D38F-55E4-6DCC-D14AB490343B}" name="Data">
       <FILE id="TYXHt5" name="AdsrData.cpp" compile="1" resource="0" file="Source/Data/AdsrData.cpp"/>
       <FILE id="NigvcR" name="AdsrData.h" compile="0" resource="0" file="Source/Data/AdsrData.h"/>
+      <FILE id="FMDYFC" name="FilterData.cpp" compile="1" resource="0" file="Source/Data/FilterData.cpp"/>
+      <FILE id="dmXJOK" name="FilterData.h" compile="0" resource="0" file="Source/Data/FilterData.h"/>
       <FILE id="CLHCzA" name="OscData.cpp" compile="1" resource="0" file="Source/Data/OscData.cpp"/>
       <FILE id="wxFiSd" name="OscData.h" compile="0" resource="0" file="Source/Data/OscData.h"/>
     </GROUP>

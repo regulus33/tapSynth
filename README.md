@@ -42,7 +42,7 @@ By using ParameterLayout, developers can easily define the parameters of a plugi
 
 The ParameterLayout class is often used in conjunction with AudioProcessorValueTreeState, which manages the state of a plugin's parameters using a ValueTree data structure. By defining the parameters using ParameterLayout and mapping them to a ValueTree node, developers can easily manage the state of their plugin's parameters and keep the GUI and audio processing code in sync.
 
-# The Glue of GUI and DATA (attachments)
+## The Glue of GUI and DATA (attachments)
 
 In JUCE, ValueTreeState::Listener objects can use ValueTreeState::Attachment objects to easily connect and synchronize values between a ValueTree and a component in the plugin's GUI.
 
@@ -63,7 +63,7 @@ Once the attachment is created, the Slider component will automatically synchron
 
 Overall, ValueTreeState::Attachment objects provide a simple and convenient way to synchronize values between a ValueTree and a component in the plugin's GUI, and they are a powerful tool for building flexible and responsive plugins in JUCE.
 
-## Destructors
+# Destructors
 
 The ~OscComponent is the destructor of the OscComponent class.
 
@@ -73,15 +73,7 @@ In the case of the OscComponent class, the destructor is defined using the overr
 
 In general, it is good practice to define a destructor for a class if the class has any non-trivial cleanup operations that need to be performed when the object is destroyed. In the case of the OscComponent class, the destructor is provided to ensure that the object is properly cleaned up when it is destroyed, even if no additional cleanup operations are required.
 
-## JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR
-
-JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR is a preprocessor macro in JUCE that defines a set of functions and member variables to prevent copying and assignment of a class, and to detect memory leaks in the class.
-
-The macro defines two private member functions for the class: a copy constructor and an assignment operator, both of which are declared but not defined. This prevents objects of the class from being copied or assigned, since attempting to do so will result in a linker error.
-
-The macro also defines a LeakedObjectDetector member variable for the class, which provides a mechanism for detecting memory leaks in the class. The LeakedObjectDetector class uses a static counter to keep track of the number of instances of the class that have been created, and reports a warning if any instances have not been properly destroyed when the program exits.
-
-## Preprocessor Macros
+# Preprocessor Macros
 
 When you define a macro, the compiler replaces all instances of the macro name with the macro's expansion code. This is done before the code is compiled, so the resulting code is effectively the same as if you had manually written the expanded code yourself.
 
@@ -99,7 +91,16 @@ int y = 10;
 int z = MAX(x, y);  // expands to: int z = ((x) > (y) ? (x) : (y));
 ```
 
-## Initializer Lists
+## JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR is a preprocessor macro in JUCE that defines a set of functions and member variables to prevent copying and assignment of a class, and to detect memory leaks in the class.
+
+The macro defines two private member functions for the class: a copy constructor and an assignment operator, both of which are declared but not defined. This prevents objects of the class from being copied or assigned, since attempting to do so will result in a linker error.
+
+The macro also defines a LeakedObjectDetector member variable for the class, which provides a mechanism for detecting memory leaks in the class. The LeakedObjectDetector class uses a static counter to keep track of the number of instances of the class that have been created, and reports a warning if any instances have not been properly destroyed when the program exits.
+
+
+# Initializer Lists
 
 An initializer list is a C++ feature that allows you to initialize the member variables of a class or struct using a concise syntax.
 
@@ -123,7 +124,8 @@ Initializer lists can be a more concise and efficient way to initialize member v
 
 Overall, initializer lists are a powerful and useful feature in C++, and are commonly used to initialize the member variables of classes and structs in a concise and efficient way.
 
-## juce::dsp::ProcessSpec
+
+# juce::dsp::ProcessSpec
 
 The `juce::dsp::ProcessSpec` class in JUCE is used to encapsulate the specifications or parameters of an audio processing operation. It provides information about the sample rate, the number of input and output channels, and the maximum number of samples that may be processed in a single call.
 
@@ -141,8 +143,16 @@ Here is a brief overview of the member variables of the juce::dsp::ProcessSpec c
 
 By encapsulating the processing specifications in a single object, the ProcessSpec class helps to simplify the interface of audio processing algorithms and make them more modular and reusable.
 
+## prepareToPlay
 
-## Uniform initialization
+The prepareToPlay method in JUCE is called by the audio device manager just before the audio stream starts playing. It is typically used to perform any necessary setup operations for the audio processing, such as initializing buffers, calculating filter coefficients, or allocating memory for processing audio.
+
+In prepareToPlay, you typically initialize any resources that need to be initialized before audio playback begins, such as allocating memory or setting up data structures. You can also initialize audio buffers or audio processing objects that need to be reset before audio playback starts.
+
+You would pass process spec to prepare to play among other things and not exclusive to processSpec. Sample rate and buffer size for instance.
+
+
+# Uniform initialization
 
 `int lastMidiNote { 0 };`
 
@@ -153,7 +163,7 @@ It just prevents narrowing. For example
 whereas `short x = 50000` would just shave the number down silently.
 
 
-## STD Unique Pointer
+# STD::UniquePointer
 
 In C++, std::unique_ptr is a smart pointer that provides automatic memory management for dynamically allocated objects.
 
@@ -172,7 +182,7 @@ In this example, two std::unique_ptr instances (ptr1 and ptr2) are created to ma
 
 Overall, std::unique_ptr is a powerful and useful feature in C++, and is commonly used to manage dynamically allocated objects in a safe and efficient way. By providing automatic memory management and ownership semantics, std::unique_ptr helps to reduce bugs and make code more robust and reliable.
 
-## Anonymous functions in c++
+# Anonymous functions in c++
 
 In C++, anonymous functions are called lambda expressions, and they can be created using the lambda syntax.
 

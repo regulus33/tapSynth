@@ -112,6 +112,7 @@ OBJECTS_SHARED_CODE := \
   $(JUCE_OBJDIR)/PluginEditor_94d4fb09.o \
   $(JUCE_OBJDIR)/SynthVoice_279f55df.o \
   $(JUCE_OBJDIR)/AdsrData_b94f6452.o \
+  $(JUCE_OBJDIR)/FilterData_fbdcfbc8.o \
   $(JUCE_OBJDIR)/OscData_4e94a44d.o \
   $(JUCE_OBJDIR)/AdsrComponent_8c0b9769.o \
   $(JUCE_OBJDIR)/OscComponent_45f2807a.o \
@@ -197,6 +198,11 @@ $(JUCE_OBJDIR)/SynthVoice_279f55df.o: ../../Source/SynthVoice.cpp
 $(JUCE_OBJDIR)/AdsrData_b94f6452.o: ../../Source/Data/AdsrData.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling AdsrData.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/FilterData_fbdcfbc8.o: ../../Source/Data/FilterData.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling FilterData.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/OscData_4e94a44d.o: ../../Source/Data/OscData.cpp
