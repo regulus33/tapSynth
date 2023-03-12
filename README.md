@@ -27,6 +27,9 @@ The reason why we process audio in blocks like this is mainly for performance re
 The `processBlock` method is responsible for calling the `renderNextBlock` method *for each voice* to generate audio samples, and then combining these samples to produce the final output audio buffer. The `renderNextBlock` method is therefore a key component of the voice's audio generation process and is called repeatedly during audio processing.
 
 
+# juce Component Name args in constructor
+
+The component name string provided in the `juce::Label` constructor is used to identify the component within the parent component's hierarchy. This is important because it allows the component to be found and manipulated programmatically using functions like `findChildWithID` or `getChildComponent`. The name is also used for debugging purposes, as it can be displayed in error messages or logging output to help identify the component that caused the issue.
 
 
 

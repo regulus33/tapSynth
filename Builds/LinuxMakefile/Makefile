@@ -115,6 +115,7 @@ OBJECTS_SHARED_CODE := \
   $(JUCE_OBJDIR)/FilterData_fbdcfbc8.o \
   $(JUCE_OBJDIR)/OscData_4e94a44d.o \
   $(JUCE_OBJDIR)/AdsrComponent_8c0b9769.o \
+  $(JUCE_OBJDIR)/FilterComponent_6abc0f33.o \
   $(JUCE_OBJDIR)/OscComponent_45f2807a.o \
   $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
@@ -213,6 +214,11 @@ $(JUCE_OBJDIR)/OscData_4e94a44d.o: ../../Source/Data/OscData.cpp
 $(JUCE_OBJDIR)/AdsrComponent_8c0b9769.o: ../../Source/UI/AdsrComponent.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling AdsrComponent.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/FilterComponent_6abc0f33.o: ../../Source/UI/FilterComponent.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling FilterComponent.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/OscComponent_45f2807a.o: ../../Source/UI/OscComponent.cpp

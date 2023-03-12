@@ -28,6 +28,10 @@
       <FILE id="TYw3Xe" name="AdsrComponent.cpp" compile="1" resource="0"
             file="Source/UI/AdsrComponent.cpp"/>
       <FILE id="LYcToF" name="AdsrComponent.h" compile="0" resource="0" file="Source/UI/AdsrComponent.h"/>
+      <FILE id="s4zQbn" name="FilterComponent.cpp" compile="1" resource="0"
+            file="Source/UI/FilterComponent.cpp"/>
+      <FILE id="ynbcEH" name="FilterComponent.h" compile="0" resource="0"
+            file="Source/UI/FilterComponent.h"/>
       <FILE id="Onz8H6" name="OscComponent.cpp" compile="1" resource="0"
             file="Source/UI/OscComponent.cpp"/>
       <FILE id="ntnMs0" name="OscComponent.h" compile="0" resource="0" file="Source/UI/OscComponent.h"/>

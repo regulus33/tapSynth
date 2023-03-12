@@ -41,7 +41,7 @@ private:
     juce::Label fmFreqLabel {"FM Freq", "FM freq"};
     juce::Label fmDepthLabel {"FM Depth", "FM Depth"};
     
-    
+    // TODO: dry make a module?
     void setSliderWithLabel(juce::Slider& slider, juce::Label& label, juce::AudioProcessorValueTreeState& apvts, juce::String paramId, std::unique_ptr<Attachment>& attachment);
     
     

@@ -15,7 +15,10 @@
 
 // NOTE: osc (audioProcessor.apvts) is a shorthand for initializing the OscComponent()
 TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), osc (audioProcessor.apvts, "OSC1WAVETYPE", "OSC1FMFREQ", "OSC1FMDEPTH"), adsr (audioProcessor.apvts)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+osc (audioProcessor.apvts, "OSC1WAVETYPE", "OSC1FMFREQ", "OSC1FMDEPTH"),
+filter (audioProcessor.apvts, "FILTERTYPE", "FILTERFREQ", "FILTERRES"),
+adsr (audioProcessor.apvts)
 {
     // TODO: programatically select first device
 //    auto deviceList = juce::MidiInput::getAvailableDevices();
@@ -26,6 +29,7 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcess
     setSize (600, 500);
     addAndMakeVisible (osc);
     addAndMakeVisible (adsr);
+    addAndMakeVisible(filter);
 }
 
 TapSynthAudioProcessorEditor::~TapSynthAudioProcessorEditor()
@@ -45,9 +49,11 @@ void TapSynthAudioProcessorEditor::resized()
 {
     const auto paddingX = 5;
     const auto paddingY = 35;
+    const auto paddingY2 = 235;
 
     // Sets the bounds of adsr and fm sections so they are in top left and right quadrants
     osc.setBounds (paddingX, paddingY, 300, 200);
     adsr.setBounds (osc.getRight(), paddingY, 280, 200);
+    filter.setBounds (paddingX, paddingY2, 300, 200);
 }
 
