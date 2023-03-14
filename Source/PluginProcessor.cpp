@@ -105,9 +105,6 @@ void TapSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
             voice->prepareToPlay (sampleRate, samplesPerBlock, getTotalNumOutputChannels());
         }
     }
-    
-    // We only have one filter regardless of all voices so just pass the buffer on to the filter
-    filter.prepareToPlay(sampleRate, samplesPerBlock, getTotalNumOutputChannels());
 }
 
 void TapSynthAudioProcessor::releaseResources()
@@ -174,7 +171,7 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         
             voice->getOscillator().setWaveType(oscWaveChoice);
             voice->getOscillator().setFmParams(fmDepth, fmFreq);
-            voice->update (attack.load(), decay.load(), sustain.load(), release.load());
+            voice->updateAdsr (attack.load(), decay.load(), sustain.load(), release.load());
             
         }
     }

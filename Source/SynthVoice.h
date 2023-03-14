@@ -12,8 +12,9 @@
 
 #include <JuceHeader.h>
 #include "SynthSound.h"
-#include "Data/AdsrData.h"
 #include "Data/OscData.h"
+#include "Data/AdsrData.h"
+#include "Data/FilterData.h"
 
 class SynthVoice : public juce::SynthesiserVoice
 {
@@ -26,13 +27,16 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock, int outputChannels);
     void renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int startSample, int numSamples) override;
     
-    void update (const float attack, const float decay, const float sustain, const float release);
+    void updateAdsr (const float attack, const float decay, const float sustain, const float release);
     // note: are we really passing the reference here?
     OscData& getOscillator() { return osc; }
     
 private:
     OscData osc;
     AdsrData adsr;
+    FilterData filter;
+    AdsrData modAdsr;
+    
     juce::AudioBuffer<float> synthBuffer;
     
     
