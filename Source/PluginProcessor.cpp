@@ -166,6 +166,12 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             auto& fmDepth = *apvts.getRawParameterValue("OSC1FMDEPTH");
             auto& fmFreq = *apvts.getRawParameterValue("OSC1FMFREQ");
             
+            // TODO does this need to be here?
+            auto& modAttack = *apvts.getRawParameterValue ("MODATTACK");
+            auto& modDecay = *apvts.getRawParameterValue ("MODDECAY");
+            auto& modSustain = *apvts.getRawParameterValue ("MODSUSTAIN");
+            auto& modRelease = *apvts.getRawParameterValue ("MODRELEASE");
+        
             voice->getOscillator().setWaveType(oscWaveChoice);
             voice->getOscillator().setFmParams(fmDepth, fmFreq);
             voice->update (attack.load(), decay.load(), sustain.load(), release.load());
@@ -234,6 +240,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"DECAY", 1}, "Decay", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 0.1f));
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"SUSTAIN", 1}, "Sustain", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 1.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"RELEASE", 1}, "Release", juce::NormalisableRange<float> { 0.0f, 3.0f, 0.01f}, 0.4f));
+    
+    // Filter ADSR
+    // {lower bound, upper bound, increment value}
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MODATTACK", 1}, "Mod Attack", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MODDECAY", 1}, "Mod Decay", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 0.1f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MODSUSTAIN", 1}, "Mod Sustain", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.01f}, 1.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MODRELEASE", 1}, "Mod Release", juce::NormalisableRange<float> { 0.0f, 3.0f, 0.01f}, 0.4f));
     
     // Filter
     // TODO: dry me
