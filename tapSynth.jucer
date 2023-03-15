@@ -2,7 +2,8 @@
 
 <JUCERPROJECT id="xPf2E3" name="tapSynth" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              cppLanguageStandard="17">
   <MAINGROUP id="oazQoP" name="tapSynth">
     <GROUP id="{B7ED45FD-C0E0-3429-7418-C229747A884F}" name="Source">
       <FILE id="Ite7ym" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -32,6 +33,10 @@
             file="Source/UI/FilterComponent.cpp"/>
       <FILE id="ynbcEH" name="FilterComponent.h" compile="0" resource="0"
             file="Source/UI/FilterComponent.h"/>
+      <FILE id="J7w9NY" name="KnobWithLabelComponent.cpp" compile="1" resource="0"
+            file="Source/UI/KnobWithLabelComponent.cpp"/>
+      <FILE id="ckLe47" name="KnobWithLabelComponent.h" compile="0" resource="0"
+            file="Source/UI/KnobWithLabelComponent.h"/>
       <FILE id="Onz8H6" name="OscComponent.cpp" compile="1" resource="0"
             file="Source/UI/OscComponent.cpp"/>
       <FILE id="ntnMs0" name="OscComponent.h" compile="0" resource="0" file="Source/UI/OscComponent.h"/>
