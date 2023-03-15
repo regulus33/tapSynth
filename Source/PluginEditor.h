@@ -40,6 +40,7 @@ private:
     OscComponent osc;
     AdsrComponent adsr;
     FilterComponent filter;
+    AdsrComponent modAdsr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TapSynthAudioProcessorEditor)
 };
