@@ -32,7 +32,7 @@ void FilterData::process(juce::AudioBuffer<float>& buffer)
     filter.process(juce::dsp::ProcessContextReplacing<float> {block});
 }
 
-void FilterData::updateParameters(const int filterType, const float frequency, const float resonance)
+void FilterData::updateParameters(const int filterType, const float frequency, const float resonance, const float modulator)
 {
     switch (filterType) {
         case 0:
@@ -48,7 +48,15 @@ void FilterData::updateParameters(const int filterType, const float frequency, c
             break;
     }
     
-    filter.setCutoffFrequency(frequency);
+    // what if we have a modulator that makes the product of this op less than 20hz (the lowest cutoff freq for the filter)
+    // we use std::fmax or std::fmin
+    // TODO this limitation should probably be inside a function on the filter class that is solely responsible for changing the freq.
+    float modFreq = frequency * modulator;
+    // stabilize modfreq between 20 and 20k hz
+    modFreq = std::fmax(modFreq, 20.0f);
+    modFreq = std::fmin(modFreq, 20000.0f);
+    
+    filter.setCutoffFrequency(modFreq);
     filter.setResonance(resonance);
 }
 

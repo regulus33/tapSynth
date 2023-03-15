@@ -28,6 +28,8 @@ public:
     void renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int startSample, int numSamples) override;
     
     void updateAdsr (const float attack, const float decay, const float sustain, const float release);
+    void updateFilter(const int filterType, const float cutoff, const float resonance);
+    void updateModAdsr(const float attack, const float decay, const float sustain, const float release);
     // note: are we really passing the reference here?
     OscData& getOscillator() { return osc; }
     

@@ -60,7 +60,7 @@ void SynthVoice::prepareToPlay (double sampleRate, int samplesPerBlock, int outp
 
 void SynthVoice::updateAdsr (const float attack, const float decay, const float sustain, const float release)
 {
-    adsr.updateADSR (attack, decay, sustain, release);
+    adsr.updateADSR(attack, decay, sustain, release);
 }
 
 void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int startSample, int numSamples)
@@ -70,11 +70,16 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
     if (! isVoiceActive())
         return;
     
+    // We actually clear the buffer
     synthBuffer.setSize (outputBuffer.getNumChannels(), numSamples, false, false, true);
+    modAdsr.applyEnvelopeToBuffer(synthBuffer, 0, numSamples);
     synthBuffer.clear();
     
     juce::dsp::AudioBlock<float> audioBlock { synthBuffer };
     osc.getNextAudioBlock(audioBlock);
+    // TODO why synthBuffer.getNumSamples() here and no numSamples????
+    adsr.applyEnvelopeToBuffer(synthBuffer, 0, synthBuffer.getNumSamples());
+    filter.process(synthBuffer);
     gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
     
     // ****** ON ENVELOPES *******
@@ -97,4 +102,21 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
         if (! adsr.isActive())
             clearCurrentNote();
     }
+    
+    // This is how we get the mod value, TODO
+//    modAdsr.getNextSample()
+//    filter.updateParameters(<#const int filterType#>, <#const float frequency#>, <#const float resonance#>, <#const float modulator#>)
+    
+}
+
+void SynthVoice::updateFilter(const int filterType, const float cutoff, const float resonance)
+{
+    float modulator = modAdsr.getNextSample();
+    filter.updateParameters(filterType, cutoff, resonance, modulator);
+}
+
+void SynthVoice::updateModAdsr(const float attack, const float decay, const float sustain, const float release)
+{
+    modAdsr.updateADSR(attack,decay,sustain,release);
+    
 }

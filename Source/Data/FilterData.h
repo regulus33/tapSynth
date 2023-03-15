@@ -19,7 +19,8 @@ public:
     // what's happening here is pretty dope, its just like each dsp class process function are all nested like Matroska dolls
     // they each pass down to the next child, the audio buffer (nothing more than a instant in time of sound) and modify it with their own magic. Like effects processing chains but setup slightly differently. Smaller bits of music.
     void process(juce::AudioBuffer<float>& buffer);
-    void updateParameters(const int filterType, const float frequency, const float resonance);
+    // Notice that the modulator is just a number (or float)! Whatever class we choose to modulate this with, its really just outputting numbers, just like CV in a eurorack system.
+    void updateParameters(const int filterType, const float frequency, const float resonance, const float modulator);
     void reset();
     
 private:

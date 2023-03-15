@@ -146,45 +146,49 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
+    // Loops through each SYNTH VOICE, so this happens as many times as you have polyphony minus keys pressed.
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
         if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
-            // Osc controls
-            // ADSR
-            // LFO
             
+            // OSC and osc mod
+            auto& oscWaveChoice = *apvts.getRawParameterValue ("OSC1WAVETYPE");
+            auto& fmDepth = *apvts.getRawParameterValue("OSC1FMDEPTH");
+            auto& fmFreq = *apvts.getRawParameterValue("OSC1FMFREQ");
+            
+            // Amp envelope
             auto& attack = *apvts.getRawParameterValue ("ATTACK");
             auto& decay = *apvts.getRawParameterValue ("DECAY");
             auto& sustain = *apvts.getRawParameterValue ("SUSTAIN");
             auto& release = *apvts.getRawParameterValue ("RELEASE");
             
-            auto& oscWaveChoice = *apvts.getRawParameterValue ("OSC1WAVETYPE");
-            auto& fmDepth = *apvts.getRawParameterValue("OSC1FMDEPTH");
-            auto& fmFreq = *apvts.getRawParameterValue("OSC1FMFREQ");
             
-            // TODO does this need to be here?
+            // Filter
+            auto& filterType = *apvts.getRawParameterValue("FILTERTYPE");
+            auto& cutoff = *apvts.getRawParameterValue("FILTERFREQ");
+            auto& resonance = *apvts.getRawParameterValue("FILTERRES");
+            
+            // Modulation envelope
             auto& modAttack = *apvts.getRawParameterValue ("MODATTACK");
             auto& modDecay = *apvts.getRawParameterValue ("MODDECAY");
             auto& modSustain = *apvts.getRawParameterValue ("MODSUSTAIN");
             auto& modRelease = *apvts.getRawParameterValue ("MODRELEASE");
-        
+            
+            
             voice->getOscillator().setWaveType(oscWaveChoice);
             voice->getOscillator().setFmParams(fmDepth, fmFreq);
+            // load() < std::atomic
             voice->updateAdsr (attack.load(), decay.load(), sustain.load(), release.load());
+            voice->updateFilter(filterType.load(), cutoff.load(), resonance.load());
+            // why not atomic? TODO
+            voice->updateModAdsr(modAttack, modDecay, modSustain, modRelease);
             
         }
     }
     
+    // This is renderinng all the voices that you see being processed in the for loop above
     synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
-    // Filter stuff
-    auto& filterType = *apvts.getRawParameterValue("FILTERTYPE");
-    auto& cutoff = *apvts.getRawParameterValue("FILTERFREQ");
-    auto& resonance = *apvts.getRawParameterValue("FILTERRES");
-    
-    filter.updateParameters(filterType, cutoff, resonance);
-    
-    filter.process(buffer);
 }
 
 //==============================================================================

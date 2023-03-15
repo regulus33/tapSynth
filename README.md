@@ -1,3 +1,66 @@
+# std::atomic
+
+In C++, an `std::atomic` is a type of thread-safe variable that can be accessed concurrently by multiple threads without causing data races. The `load()` member function of an `std::atomic` object is used to read the current value of the atomic variable.
+
+When you call `load()` on an `std::atomic` object, it returns the current value of the atomic variable. The `load()` operation is atomic, which means that it is guaranteed to happen in its entirety before any other operation can take place on the same atomic variable.
+
+Here is an example of how you might use `load()` with an `std::atomic`:
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+std::atomic<int> my_atomic_variable(0);
+
+void thread_func()
+{
+    std::cout << "Thread " << std::this_thread::get_id() << " reads value: " << my_atomic_variable.load() << std::endl;
+}
+
+int main()
+{
+    my_atomic_variable.store(42);
+    std::thread t1(thread_func);
+    std::thread t2(thread_func);
+    t1.join();
+    t2.join();
+}
+```
+
+# const in method params
+Just good practice to show you don't intend on modifying the parameter within the method.
+
+# juce adsr applyEnvelopeToBuffer()
+
+`applyEnvelopeToBuffer` is a method in the JUCE C++ library that applies a given envelope shape to an audio buffer. The envelope shape can be defined by a series of points that specify the envelope's value at different times, and the method applies the envelope by multiplying each sample in the buffer by the corresponding envelope value.
+
+Here's an example usage:
+
+```cpp
+// create an envelope shape
+juce::ADSR::Parameters adsrParams;
+adsrParams.attack = 0.1f;
+adsrParams.decay = 0.2f;
+adsrParams.sustain = 0.5f;
+adsrParams.release = 0.3f;
+juce::ADSR envelope {getSampleRate()};
+envelope.setParameters(adsrParams);
+
+// create an audio buffer to apply the envelope to
+juce::AudioBuffer<float> buffer {2, 44100};
+// fill the buffer with audio data...
+
+// apply the envelope to the buffer
+juce::AudioBuffer<float> envelopeBuffer {1, buffer.getNumSamples()};
+envelope.applyEnvelopeToBuffer(envelopeBuffer, 0, buffer.getNumSamples());
+buffer.applyGainRamp(0, buffer.getNumSamples(), 1.0f, 0.0f);
+buffer.applyGain(envelopeBuffer.getReadPointer(0), envelopeBuffer.getNumSamples());
+```
+
+In this example, an `ADSR` envelope is created with attack, decay, sustain, and release times, and the envelope is applied to an audio buffer `buffer`. First, a separate buffer `envelopeBuffer` is created to hold the envelope values. Then, the envelope is applied to `envelopeBuffer` using the `applyEnvelopeToBuffer` method. Finally, the envelope is used to apply a gain ramp to `buffer` and to multiply the samples in `buffer` by the envelope values.
+
+
 # juce::SynthesizerVoice
 The `juce::SynthesiserVoice` class is a base class for creating voices for a synthesizer in JUCE. It contains methods that are common to all types of synthesizer voices, such as triggering and stopping the voice, handling pitch bend and aftertouch, and rendering the audio for a particular note. When creating a new synthesizer in JUCE, you would typically subclass `juce::SynthesiserVoice` to create your own custom voice class that implements the specifics of your synthesizer.
 
