@@ -1,3 +1,25 @@
+# Processing continuous audio
+An oscillator in JUCE (or any other digital audio system) needs to know the previous sample value in order to calculate the next sample value.
+
+When an oscillator generates a waveform, it uses an internal phase accumulator to keep track of its position within the waveform. The phase accumulator is updated on each call to the `renderNextBlock()` function, and determines the position of the oscillator within the waveform.
+
+To generate the next sample value, the oscillator reads the sample value at the current position in the waveform, and uses **linear interpolation** to calculate the exact value of the waveform between samples. The oscillator then increments its phase accumulator by the desired frequency, and repeats the process for the next sample.
+
+A phase accumulator is a digital signal processing technique used in audio synthesis to keep track of the phase of an oscillating waveform.
+
+In an oscillator, the phase of the waveform determines the position of the waveform over time. The phase accumulator is a variable that is updated on each sample, and represents the current phase of the oscillator. The value of the phase accumulator is typically represented as a fractional index into the waveform, with a range of 0 to 1 representing a complete cycle of the waveform.
+
+The phase accumulator is used to calculate the next sample value for the oscillator by determining the current position within the waveform and interpolating between the adjacent samples. The frequency of the oscillator is determined by the rate at which the phase accumulator is incremented, which is typically a function of the desired frequency and the sample rate of the audio stream.
+#### Phase Accumulator  
+
+The phase accumulator can be thought of as a pointer that moves through a lookup table of precomputed waveform values. On each sample, the accumulator is incremented by a value proportional to the desired frequency, and the waveform value at the current accumulator position is read from the lookup table. The accumulator is then used to interpolate between the adjacent waveform values to determine the exact value of the waveform at the current sample.
+
+
+
+
+
+
+
 # juce::SynthesizerVoice
 The `juce::SynthesiserVoice` class is a base class for creating voices for a synthesizer in JUCE. It contains methods that are common to all types of synthesizer voices, such as triggering and stopping the voice, handling pitch bend and aftertouch, and rendering the audio for a particular note. When creating a new synthesizer in JUCE, you would typically subclass `juce::SynthesiserVoice` to create your own custom voice class that implements the specifics of your synthesizer.
 
@@ -280,6 +302,7 @@ part 3 https://www.youtube.com/watch?v=9liX9Jf7RkE
 
 `Command + option + e` 
 
-
-
+#### Switch tabs
+`Command + shift {` left
+`Command + shift }` right
 

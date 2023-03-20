@@ -32,7 +32,7 @@ void FilterData::process(juce::AudioBuffer<float>& buffer)
     filter.process(juce::dsp::ProcessContextReplacing<float> {block});
 }
 
-void FilterData::updateParameters(const int filterType, const float frequency, const float resonance)
+void FilterData::updateParameters(const int filterType, const float frequency, const float resonance, const float modulator)
 {
     switch (filterType) {
         case 0:
@@ -48,7 +48,12 @@ void FilterData::updateParameters(const int filterType, const float frequency, c
             break;
     }
     
-    filter.setCutoffFrequency(frequency);
+    float modFreq = frequency * modulator;
+    // TODO IF modfreq is always between 0.1 and 1.0 then its not possible for the product to exceed 20000.0f
+    // You probably only need to do std::fmax(modFreq, 20.0f)
+    modFreq = std::fmin(std::fmax(modFreq, 20.0f), 20000.0f);
+    
+    filter.setCutoffFrequency(modFreq);
     filter.setResonance(resonance);
 }
 
